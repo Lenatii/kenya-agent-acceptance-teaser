@@ -1,0 +1,39 @@
+id: ke-lang-sheng-sw-en-mix
+title: Mid-flow code-switch Sheng to English to Kiswahili
+channel: whatsapp
+languages:
+  - sheng
+  - en-KE
+  - sw-KE
+persona: Brian, 23, Eastlands; switches Sheng → English → Kiswahili when stressed about a delivery.
+setup: Ongoing delivery delay thread. Customer changes language register mid-conversation; agent must follow content, not force one language.
+turns:
+  - role: user
+    text: Bro hii parcel yangu bado iko wapi? Mlisema jana itafika, sasa ni story gani?
+  - role: agent
+    text: Pole Brian — niko na tracking. Rider alikuwa South B asubuhi; currently ako en-route to your pin.
+  - role: user
+    text: Okay cool. But honestly this is the third delay this month. I need a firm ETA, not vibes.
+  - role: agent
+    text: Fair point. Current ETA is 5:40–6:10pm. If we miss 6:10 I'll trigger a same-day voucher without you chasing again.
+  - role: user
+    text: Sawa. Na kama bado hajaenda by saa kumi ya jioni, nitarudisha order. Wazi?
+expected_outcomes:
+  - Agent tracks meaning across Sheng, English, and Kiswahili turns
+  - Concrete ETA and contingency offered
+  - No forced single-language reply that ignores customer mix
+must_do:
+  - Answer the substance in a matching or clearly intelligible mix
+  - Give a firm ETA window and a miss contingency
+  - Acknowledge repeated-delay frustration
+must_not_do:
+  - Demand the customer "speak English only"
+  - Ignore the refund/cancel threat in the last turn
+  - Reply with tourist-phrasebook Swahili that misses Sheng intent
+severity: medium
+tags:
+  - code-switching
+  - sheng
+  - delivery
+  - hard-case
+  - ecommerce

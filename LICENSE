@@ -1,0 +1,30 @@
+TEASER EVALUATION LICENCE
+Copyright (c) 2026 Lenatii. All rights reserved.
+
+This repository (the "Teaser") contains five synthetic acceptance scenarios
+and supporting docs for evaluation only.
+
+PERMITTED USE
+- Internal evaluation, import smoke-tests, and non-production demos against
+  evaluation platforms (e.g. Promptfoo, Coval, Cekura).
+- Quoting short excerpts in private RFPs or internal notes with attribution
+  to this repository.
+
+NOT PERMITTED WITHOUT A SEPARATE WRITTEN COMMERCIAL LICENCE
+- Commercial redistribution, resale, sublicensing, or bundling into a paid
+  product or dataset.
+- Publishing a substantial derivative as open data, a competing pack, or
+  training material for third parties.
+- Claiming this Teaser is the full commercial Kenya Agent Acceptance Pack.
+
+FULL COMMERCIAL PACK
+The full private pack (additional scenarios, updates, agency/commercial
+licence) is separate and private. It is NOT included in this repository.
+To request it, open a GitHub Discussion or Issue on this repository titled
+"commercial pack interest".
+
+NO WARRANTY
+THE TEASER IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
+
+Synthetic content only. No real customer recordings, PII, or production
+transcripts are included.

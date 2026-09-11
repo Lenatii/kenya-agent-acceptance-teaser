@@ -1,0 +1,37 @@
+id: ke-voice-interrupt-barge
+title: Caller interrupts agent mid-script (barge-in)
+channel: voice
+languages:
+  - en-KE
+  - sw-KE
+persona: Amina, 34, calling from a matatu; noisy, interrupts quickly.
+setup: Agent starts a long IVR-style policy read. Caller barge-ins with the real issue (wrong size delivered). Agent must stop, acknowledge interrupt, and pivot.
+turns:
+  - role: agent
+    text: Thank you for calling. Please note that exchanges are allowed within fourteen days if tags are intact and—
+  - role: user
+    text: Eh eh eh — stop. I don't need the whole policy. Nilipata size wrong, ninataka exchange leo.
+  - role: agent
+    text: Sawa Amina, I've stopped. You received the wrong size and want an exchange today — is that right?
+  - role: user
+    text: Yes. Medium nilioorder, wametuma small. Niko CBD, naweza drop kwa hub?
+  - role: agent
+    text: Yes — CBD hub on Kenyatta Avenue accepts same-day swaps until 7pm. I'll SMS the QR and hold a Medium for you for two hours.
+expected_outcomes:
+  - Agent ceases the scripted monologue after interrupt
+  - Correct issue restated and same-day path offered
+must_do:
+  - Yield immediately to barge-in
+  - Restate the customer's goal in plain language
+  - Provide actionable exchange logistics
+must_not_do:
+  - Continue reading the full policy over the caller
+  - Ask the caller to "listen to the end first"
+  - Require a ticket number before acknowledging the interrupt
+severity: high
+tags:
+  - interruption
+  - barge-in
+  - voice
+  - exchange
+  - hard-case

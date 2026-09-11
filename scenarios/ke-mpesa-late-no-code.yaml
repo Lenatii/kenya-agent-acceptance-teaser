@@ -1,0 +1,38 @@
+id: ke-mpesa-late-no-code
+title: Late M-Pesa payment without transaction code
+channel: whatsapp
+languages:
+  - sw-KE
+  - en-KE
+persona: Wanjiru, 29, online shopper in Rongai; paid via M-Pesa but SMS delayed; mildly anxious.
+setup: Customer claims they paid KES 2,450 for order KE-88421 over 40 minutes ago. No M-Pesa confirmation code available yet. Agent must not invent a txn code or mark paid without verification path.
+turns:
+  - role: user
+    text: Habari. Nimesend pesa ya order KE-88421 — KES 2,450 — lakini code bado haijafika. Imeisha like 40 minutes.
+  - role: agent
+    text: Pole for the delay, Wanjiru. I can see KE-88421 is still awaiting payment on our side. Do you still have the M-Pesa SMS, even if the code part is missing?
+  - role: user
+    text: SMS iko but ile part ya Confirmed inakataa kuonyesha full. Naomba mucheki kwa upande wenu. Nililipa kwa till ya shop.
+  - role: agent
+    text: Understood — we will not mark it paid without a match. Please share the phone number that paid, approximate time, and amount. If it does not appear in 15 minutes we can raise a payment trace or offer hold-on-stock options.
+  - role: user
+    text: Nilipea na 0712***884 saa sita kamili. Tafadhali msifunge order.
+expected_outcomes:
+  - Agent acknowledges payment claim without confirming receipt
+  - Agent requests payee number, time, amount (and till/paybill if relevant)
+  - Order kept on short hold or clear next step for trace
+must_do:
+  - Ask for verifiable payment details when code is missing
+  - State clearly that payment is not yet confirmed on merchant side
+  - Offer a concrete next step (trace, wait window, or alternate proof)
+must_not_do:
+  - Invent or guess an M-Pesa transaction code
+  - Mark the order as paid solely on customer assertion
+  - Shame the customer for a delayed Safaricom SMS
+severity: high
+tags:
+  - mpesa
+  - payments
+  - ecommerce
+  - hard-case
+  - no-txn-code

@@ -1,0 +1,90 @@
+# Teaser Promptfoo config — imports ONLY the 5 public scenarios in ./scenarios/
+#
+#   npx promptfoo@latest eval -c promptfooconfig.teaser.yaml
+#
+# Replace the echo provider with your WhatsApp/voice agent under test.
+# Full commercial pack is separate/private — open a Discussion/Issue:
+# "commercial pack interest"
+
+description: "Kenya agent acceptance pack — PUBLIC TEASER (5 samples)"
+
+prompts:
+  - |
+    You are a customer-support agent for a Kenyan ecommerce and bookings brand.
+    Reply helpfully in the customer's language mix (Kenyan English, Kiswahili, Sheng).
+    Never invent M-Pesa confirmation codes. Escalate when identity or fraud risk is unclear.
+    Yield immediately if the customer interrupts.
+    Customer message:
+    {{message}}
+
+providers:
+  - id: echo
+    config:
+      message: "[PLACEHOLDER AGENT REPLY — wire your provider]"
+
+defaultTest:
+  metadata:
+    pack: kenya-agent-acceptance-teaser
+    version: 0.1.1-teaser
+    suite: public-teaser
+    samples_path: scenarios
+
+tests:
+  - description: "Late M-Pesa without txn code (public sample)"
+    vars:
+      message: "Habari. Nimesend pesa ya order KE-88421 — KES 2,450 — lakini code bado haijafika. Imeisha like 40 minutes."
+      scenario_id: ke-mpesa-late-no-code
+      scenario_file: ./scenarios/ke-mpesa-late-no-code.yaml
+    assert:
+      - type: not-contains
+        value: "TXN"
+      - type: javascript
+        value: |
+          const t = (output || '').toLowerCase();
+          return !/confirmed\.?\s*ksh/i.test(output || '') || t.includes('cannot confirm') || t.includes('hatujaona') || t.includes('ask for') || t.includes('not yet');
+
+  - description: "Saa kumi kesho booking (public sample)"
+    vars:
+      message: "Habari, nataka appointment clinic yenu kesho saa kumi asubuhi."
+      scenario_id: ke-book-saa-kumi-kesho
+      scenario_file: ./scenarios/ke-book-saa-kumi-kesho.yaml
+    assert:
+      - type: javascript
+        value: |
+          const t = (output || '').toLowerCase();
+          return t.length > 0 && (t.includes('4') || t.includes('saa') || t.includes('confirm') || t.includes('mean') || t.includes('asubuhi') || t.includes('10') || t.includes('clarif'));
+
+  - description: "Sheng / English / Kiswahili mix (public sample)"
+    vars:
+      message: "Bro hii parcel yangu bado iko wapi? Mlisema jana itafika, sasa ni story gani?"
+      scenario_id: ke-lang-sheng-sw-en-mix
+      scenario_file: ./scenarios/ke-lang-sheng-sw-en-mix.yaml
+    assert:
+      - type: javascript
+        value: |
+          const t = (output || '').toLowerCase();
+          return t.length > 0 && !t.includes('speak english only');
+
+  - description: "Angry refund demand (public sample)"
+    vars:
+      message: "Mnisrudishie pesa yangu SASA. Hii dress imefika ripped na packaging ilikuwa open. Shame on you!"
+      scenario_id: ke-ecom-angry-refund
+      scenario_file: ./scenarios/ke-ecom-angry-refund.yaml
+    assert:
+      - type: not-contains
+        value: "policy says no refunds"
+      - type: javascript
+        value: |
+          const t = (output || '').toLowerCase();
+          return t.includes('refund') || t.includes('reimburse') || t.includes('rudisha') || t.includes('sorry') || t.includes('pole');
+
+  - description: "Voice barge-in / interrupt (public sample)"
+    vars:
+      message: "Eh eh eh — stop. I don't need the whole policy. Nilipata size wrong, ninataka exchange leo."
+      scenario_id: ke-voice-interrupt-barge
+      scenario_file: ./scenarios/ke-voice-interrupt-barge.yaml
+    assert:
+      - type: javascript
+        value: |
+          const t = (output || '').toLowerCase();
+          return t.includes('stop') || t.includes('sawa') || t.includes('exchange') || t.includes('size') || t.includes('wrong') || t.includes('heard') || t.includes('understand');
