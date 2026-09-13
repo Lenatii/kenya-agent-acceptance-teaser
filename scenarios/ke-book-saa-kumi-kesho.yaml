@@ -1,38 +1,48 @@
+schema_version: "0.2"
 id: ke-book-saa-kumi-kesho
 title: Book clinic slot using saa kumi kesho
-channel: voice
+channel: voice-proxy
 languages:
   - sw-KE
   - en-KE
-persona: Otieno, 41, parent in Westlands; uses Swahili time (saa) naturally; low patience for re-asking.
-setup: Caller wants an appointment tomorrow at saa kumi asubuhi. Agent must correctly interpret Swahili clock (saa kumi ≈ 4:00) in morning context and confirm in both conventions if needed.
+failure_class: locale-time-semantics
+business_risk: Silent time conversion error can create a wrong appointment while the agent still sounds fluent.
+locale_assumptions:
+  - In the relevant Kenyan Swahili clock convention, "saa kumi asubuhi" maps to approximately 04:00, not 10:00.
+  - If business opening hours make the literal time implausible, the agent must clarify rather than silently substitute.
+persona: Otieno, 41, parent in Westlands; uses Swahili time naturally; low patience for re-asking.
+setup: Caller wants an appointment tomorrow at saa kumi asubuhi. Agent must interpret the local clock convention and clarify intent before creating any booking.
 turns:
   - role: user
     text: Habari, nataka appointment clinic yenu kesho saa kumi asubuhi.
   - role: agent
-    text: Karibu. Just to confirm — saa kumi asubuhi is 4:00 in the morning. Our earliest clinic slot tomorrow is 8:00. Did you mean 10:00, or truly 4:00?
+    text: Karibu. Just to confirm — saa kumi asubuhi is 4:00 in the morning. Our clinic is not open then. Did you mean 10:00, which is saa nne, or did you truly mean 4:00?
   - role: user
-    text: Aii hapana — nimesema saa kumi ya asubuhi... wait, kwa English ni around ten? Nimesahau hii conversion.
+    text: Aii hapana — kwa English nilimaanisha ten.
   - role: agent
-    text: Hakuna shida. In Kenyan Swahili, saa kumi asubuhi is 4:00 a.m. What many people mean for a clinic is saa nne (10:00). We have 10:00 and 10:30 tomorrow in Westlands. Which one should I lock?
-  - role: user
-    text: Ndoe 10:00 — saa nne. And send WhatsApp confirmation.
+    text: Sawa — 10:00 a.m., saa nne. I will use 10:00 as the requested time and confirm availability before locking it.
 expected_outcomes:
-  - Agent correctly maps saa kumi asubuhi to 04:00 and checks intent
-  - Agent offers valid clinic slots and confirms in both Swahili and clock time
-  - Booking locked only after disambiguation
+  - Agent recognizes the 04:00 interpretation of saa kumi asubuhi
+  - Agent clarifies intended time before committing a booking
+  - Final time is stated in unambiguous clock terms
 must_do:
-  - Demonstrate correct saa ↔ clock conversion
+  - Demonstrate correct saa to clock interpretation
   - Disambiguate before committing the slot
-  - Confirm final time in clear clock terms
+  - Confirm final time clearly after clarification
 must_not_do:
-  - Silently book 10:00 when user said saa kumi without checking
-  - Lecture the caller rudely about "wrong" time
-  - Leave the appointment time ambiguous in the confirmation
+  - Silently treat saa kumi as 10:00
+  - Claim a booking is confirmed before clarification
+  - Lecture the caller rudely about the time convention
+pass_criteria:
+  - Output identifies 04:00 or 4 a.m. as the literal saa-kumi interpretation
+  - Output asks for clarification or confirmation of intended time
+  - Output does not claim the appointment is already booked or confirmed
+review_status: human-reviewed-public-teaser
+last_validated: "2026-09-13"
 severity: high
 tags:
   - booking
   - saa-kumi
   - swahili-time
+  - locale-semantics
   - hard-case
-  - voice

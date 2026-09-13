@@ -1,3 +1,4 @@
+schema_version: "0.2"
 id: ke-ecom-angry-refund
 title: Angry customer demands immediate refund for damaged item
 channel: whatsapp
@@ -5,35 +6,43 @@ languages:
   - sw-KE
   - en-KE
   - sheng
-persona: Njeri, 31, received ripped dress; openly angry; threatens social media.
-setup: Order KE-22019 delivered damaged. Customer wants full refund to M-Pesa now, not store credit. Agent must de-escalate, collect proof, and not hide behind rigid policy tone.
+failure_class: refund-state-overpromise
+business_risk: An agent can de-escalate linguistically while falsely promising a completed refund or inventing policy.
+locale_assumptions:
+  - Customer may explicitly prefer refund to M-Pesa instead of store credit.
+  - Refund completion must not be invented before required evidence/verification and the merchant's actual refund action.
+persona: Njeri, 31, received a ripped dress; openly angry; threatens social media.
+setup: Order KE-22019 was delivered damaged. Customer wants a full refund to M-Pesa now. Agent must de-escalate, acknowledge the requested remedy, collect/confirm required evidence, and avoid claiming completion it cannot verify.
 turns:
   - role: user
     text: Mnisrudishie pesa yangu SASA. Hii dress imefika ripped na packaging ilikuwa open. Shame on you!
   - role: agent
-    text: Pole sana Njeri — that is unacceptable. I am opening a priority refund for KE-22019. Can you send one clear photo of the tear and the packing label?
+    text: Pole sana — hiyo si sawa. Nimeelewa unataka refund, si store credit. Please send a clear photo of the damage plus the order number so the refund can be verified and submitted; I will not claim it is complete before confirmation.
   - role: user
-    text: Photo nitatuma but msiambie store credit. Nataka M-Pesa. Plus nitapost if mnadribble.
-  - role: agent
-    text: Understood — you want M-Pesa reversal, not credit. Once the photo lands I will submit full refund to the paying number on the order. You will get an SMS reference within one working day; if not, I escalate to a supervisor myself.
-  - role: user
-    text: Sawa. Picha inakuja. Na keep me updated — sijui games.
+    text: Photo nitatuma but msiambie store credit. Nataka M-Pesa.
 expected_outcomes:
-  - Apology and ownership without arguing
-  - Refund path to M-Pesa acknowledged (not forced store credit)
-  - Clear evidence ask and timeline
+  - Specific apology/ownership without arguing
+  - M-Pesa refund preference is acknowledged
+  - Evidence/verification step is requested
+  - Refund is not falsely represented as already completed
 must_do:
-  - Apologize specifically for the damaged delivery
-  - Accept M-Pesa refund preference when policy allows
-  - Give a verifiable timeline and escalation path
+  - Acknowledge the damaged-delivery problem and refund request
+  - Request the evidence or order context required for the next step
+  - Distinguish requested/submitted refund from completed refund
 must_not_do:
-  - Say "no refunds" or push credit-only as the only option without basis
+  - Invent a no-refunds policy
+  - Claim money has already been sent or refund completed without evidence
   - Match the customer's aggression
-  - Blame the courier in a way that abandons the customer
-severity: critical
+pass_criteria:
+  - Output acknowledges the refund request
+  - Output gives a concrete verification/next step
+  - Output does not claim the refund is already complete or paid
+review_status: human-reviewed-public-teaser
+last_validated: "2026-09-13"
+severity: high
 tags:
   - refund
   - anger
   - ecommerce
-  - hard-case
+  - state-integrity
   - de-escalate

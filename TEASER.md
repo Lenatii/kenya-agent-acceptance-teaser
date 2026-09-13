@@ -4,22 +4,46 @@ Your American-English demo agent says: *“Sure! I can help with that appointmen
 
 Your Nairobi caller says: **“Boss, nilishalipa M-Pesa jana”** — and books **saa kumi**.
 
-Same product. Different failure mode. Generic FAQ suites never catch it. Production does.
+Same product. Different failure mode.
+
+The point of this pack is not to test whether a model can sprinkle Swahili words into a reply. It is to test whether the agent preserves the **correct business state** when Kenyan language, time, payment and support semantics get messy.
 
 ## Touch it without buying the vault
 
-Five free hard cases live in [`scenarios/`](scenarios/) — M-Pesa with no code, *saa kumi*, Sheng↔English↔Swahili, angry refund, barge-in. Import them. Break your agent on purpose. That is the point.
+Five free hard cases live in [`scenarios/`](scenarios/):
 
-The **commercial pack** is a **separate private** product: the remaining hard cases, updates, and a written licence so agencies can ship gated releases — not a slideshow of the same five forever.
+- unmatched / delayed M-Pesa payment;
+- *saa kumi* booking ambiguity;
+- Sheng ↔ English ↔ Kiswahili code-switching;
+- damaged-item refund pressure;
+- interruption / barge-in semantic proxy.
+
+Import them. Break your agent on purpose. That is the point.
+
+The **commercial pack** is a **separate private product**: additional hard cases, versioned updates, stronger evaluator mappings, and written commercial/agency licensing.
 
 ## What buyers get (hypothesis)
 
 | | |
 |--|--|
-| **Starter** | Remaining hard cases beyond these five, Promptfoo/Coval-shaped import, severity tags, refresh cadence | **€149–€249** |
-| **Agency licence** | Commercial use / redistribution terms in writing | on request |
+| **Starter** | Additional Kenya hard cases, versioned scenario schema, Promptfoo/Coval-shaped mappings, severity + business-risk tags, update cadence | **€149–€249 hypothesis** |
+| **Agency licence** | Multi-client commercial use and redistribution terms in writing | on request |
 
-Pricing is a **hypothesis**, not a live checkout. No fake testimonials.
+Pricing is a **hypothesis**, not a live checkout. No fake testimonials or fake customer logos.
+
+## Why this is not “just prompts”
+
+Each case carries:
+
+- an explicit failure class;
+- business risk;
+- locale assumptions;
+- required and prohibited behaviours;
+- pass criteria;
+- severity;
+- human review status.
+
+A test should fail an agent that sounds fluent but leaves the business in the wrong state.
 
 ## What this is NOT
 
@@ -28,12 +52,14 @@ Pricing is a **hypothesis**, not a live checkout. No fake testimonials.
 - Not a Promptfoo replacement
 - Not Conekta (or any payment-rail) code
 - Not live customer transcripts or PII
-- **Not the full commercial pack** (that lives in a private repo)
+- Not a certification mark
+- **Not the full commercial pack**
 
-## CTA — request the commercial pack
+## Commercial pack interest
 
-1. Score these five samples (`promptfooconfig.teaser.yaml`).
-2. Open a **GitHub Discussion** or **Issue** on this repository titled **`commercial pack interest`**.
-3. Say whether you need starter vs agency licence.
+1. Run the five samples (`npx promptfoo@latest eval -c promptfooconfig.teaser.yaml -j 1 --no-progress-bar`). Paste real agent replies, or swap in your own automated provider.
+2. Open a **GitHub Discussion** or **Issue** titled **`commercial pack interest`**.
+3. Say starter vs agency licence and the agent surface you are evaluating.
+4. Do **not** post proprietary prompts, customer data, credentials, or confidential deployment details.
 
-Optional placeholder (change anytime): [mailto:hello@example.com?subject=commercial%20pack%20interest](mailto:hello@example.com?subject=commercial%20pack%20interest) — prefer Discussions/Issues so nothing depends on a live inbox.
+A private contact/procurement route can be established separately after initial interest.

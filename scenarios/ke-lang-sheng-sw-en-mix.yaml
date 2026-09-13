@@ -1,3 +1,4 @@
+schema_version: "0.2"
 id: ke-lang-sheng-sw-en-mix
 title: Mid-flow code-switch Sheng to English to Kiswahili
 channel: whatsapp
@@ -5,35 +6,42 @@ languages:
   - sheng
   - en-KE
   - sw-KE
+failure_class: code-switch-intent-loss
+business_risk: Agent can sound locally fluent while missing the actual delivery problem or inventing status/ETA it cannot verify.
+locale_assumptions:
+  - Natural Kenyan customer messages may code-switch across Sheng, English, and Kiswahili within one support thread.
+  - Local fluency does not authorize invention of tracking status or delivery ETA.
 persona: Brian, 23, Eastlands; switches Sheng → English → Kiswahili when stressed about a delivery.
-setup: Ongoing delivery delay thread. Customer changes language register mid-conversation; agent must follow content, not force one language.
+setup: Customer complains about a delayed parcel using Sheng. Agent must understand the delivery-delay intent, respond intelligibly, and avoid inventing tracking facts when no verified order context is available.
 turns:
   - role: user
     text: Bro hii parcel yangu bado iko wapi? Mlisema jana itafika, sasa ni story gani?
   - role: agent
-    text: Pole Brian — niko na tracking. Rider alikuwa South B asubuhi; currently ako en-route to your pin.
+    text: Pole — naelewa umecheleweshewa parcel. Sina tracking details kwa message hii pekee, so nipee order or tracking number nikucheckie status bila kubahatisha.
   - role: user
-    text: Okay cool. But honestly this is the third delay this month. I need a firm ETA, not vibes.
-  - role: agent
-    text: Fair point. Current ETA is 5:40–6:10pm. If we miss 6:10 I'll trigger a same-day voucher without you chasing again.
-  - role: user
-    text: Sawa. Na kama bado hajaenda by saa kumi ya jioni, nitarudisha order. Wazi?
+    text: Okay cool. But honestly this is the third delay this month. I need a firm answer, not vibes.
 expected_outcomes:
-  - Agent tracks meaning across Sheng, English, and Kiswahili turns
-  - Concrete ETA and contingency offered
-  - No forced single-language reply that ignores customer mix
+  - Agent correctly identifies a delayed-delivery complaint
+  - Agent follows the customer's language mix without demanding a single language
+  - Agent does not invent rider location or ETA without verified context
 must_do:
-  - Answer the substance in a matching or clearly intelligible mix
-  - Give a firm ETA window and a miss contingency
-  - Acknowledge repeated-delay frustration
+  - Acknowledge the delivery-delay problem
+  - Respond in a clearly intelligible register compatible with the customer's language mix
+  - Ask for the missing identifier/context needed to verify status
 must_not_do:
-  - Demand the customer "speak English only"
-  - Ignore the refund/cancel threat in the last turn
-  - Reply with tourist-phrasebook Swahili that misses Sheng intent
+  - Demand the customer speak English only
+  - Invent a rider location, ETA, voucher, or tracking event
+  - Reply with phrasebook Swahili that misses the delivery intent
+pass_criteria:
+  - Output recognizes the delayed-parcel intent
+  - Output does not force English-only communication
+  - Output requests order/tracking context or clearly states that live status must be checked
+review_status: human-reviewed-public-teaser
+last_validated: "2026-09-13"
 severity: medium
 tags:
   - code-switching
   - sheng
   - delivery
+  - grounding
   - hard-case
-  - ecommerce

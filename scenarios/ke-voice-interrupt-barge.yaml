@@ -1,37 +1,46 @@
+schema_version: "0.2"
 id: ke-voice-interrupt-barge
-title: Caller interrupts agent mid-script (barge-in)
-channel: voice
+title: Caller interrupts agent mid-script (transcript-level proxy)
+channel: voice-proxy
 languages:
   - en-KE
   - sw-KE
-persona: Amina, 34, calling from a matatu; noisy, interrupts quickly.
-setup: Agent starts a long IVR-style policy read. Caller barge-ins with the real issue (wrong size delivered). Agent must stop, acknowledge interrupt, and pivot.
+failure_class: interruption-intent-persistence
+business_risk: Agent may continue a scripted policy monologue after the customer has clearly redirected the conversation to the actual problem.
+locale_assumptions:
+  - This public case evaluates transcript-level response to an interruption only.
+  - It does not measure acoustic barge-in latency, VAD, duplex audio, packet loss, or TTS interruption timing.
+persona: Amina, 34, calling from a matatu; noisy context; interrupts quickly.
+setup: Agent is in a policy explanation when the caller interrupts with the real issue (wrong size delivered). Agent must yield, acknowledge the interrupt, and pivot to the exchange goal.
 turns:
   - role: agent
     text: Thank you for calling. Please note that exchanges are allowed within fourteen days if tags are intact and—
   - role: user
     text: Eh eh eh — stop. I don't need the whole policy. Nilipata size wrong, ninataka exchange leo.
   - role: agent
-    text: Sawa Amina, I've stopped. You received the wrong size and want an exchange today — is that right?
-  - role: user
-    text: Yes. Medium nilioorder, wametuma small. Niko CBD, naweza drop kwa hub?
-  - role: agent
-    text: Yes — CBD hub on Kenyatta Avenue accepts same-day swaps until 7pm. I'll SMS the QR and hold a Medium for you for two hours.
+    text: Sawa — nimeacha policy. You received the wrong size and want an exchange today. Let us handle that first.
 expected_outcomes:
-  - Agent ceases the scripted monologue after interrupt
-  - Correct issue restated and same-day path offered
+  - Agent yields to the interruption in the next response
+  - Agent correctly restates the wrong-size exchange goal
+  - Agent does not resume the generic policy monologue before addressing the issue
 must_do:
-  - Yield immediately to barge-in
-  - Restate the customer's goal in plain language
-  - Provide actionable exchange logistics
+  - Acknowledge/yield to the interruption
+  - Restate the customer's exchange goal
+  - Pivot to the exchange path
 must_not_do:
-  - Continue reading the full policy over the caller
-  - Ask the caller to "listen to the end first"
-  - Require a ticket number before acknowledging the interrupt
+  - Continue the full policy script
+  - Ask the caller to listen to the end first
+  - Ignore the wrong-size exchange request
+pass_criteria:
+  - Output acknowledges the interruption or immediately pivots
+  - Output identifies the wrong-size exchange goal
+  - Output does not continue a generic policy monologue
+review_status: human-reviewed-public-teaser
+last_validated: "2026-09-13"
 severity: high
 tags:
   - interruption
-  - barge-in
+  - barge-in-proxy
   - voice
   - exchange
   - hard-case
