@@ -1,49 +1,66 @@
-# Teaser Promptfoo config — imports ONLY the 5 public scenarios in ./scenarios/
+# Teaser Promptfoo config — ONLY the 5 public scenarios in ./scenarios/
 #
-#   npx promptfoo@latest eval -c promptfooconfig.teaser.yaml
+# Zero-setup/manual run:
+#   npx promptfoo@latest eval -c promptfooconfig.teaser.yaml -j 1 --no-progress-bar
 #
-# Replace the echo provider with your WhatsApp/voice agent under test.
-# Full commercial pack is separate/private — open a Discussion/Issue:
-# "commercial pack interest"
+# The default provider is Promptfoo's manual-input provider so the evaluator
+# grades an actual response you paste from your agent. For automated regression,
+# replace it with your real Promptfoo provider/target.
+#
+# IMPORTANT:
+# - These deterministic checks are deliberately stricter than v0.1.
+# - The voice interruption case is a transcript-level semantic proxy only.
+# - Production evaluation should add human review and/or an evaluator suitable
+#   for the buyer's actual system.
 
 description: "Kenya agent acceptance pack — PUBLIC TEASER (5 samples)"
 
 prompts:
   - |
-    You are a customer-support agent for a Kenyan ecommerce and bookings brand.
-    Reply helpfully in the customer's language mix (Kenyan English, Kiswahili, Sheng).
-    Never invent M-Pesa confirmation codes. Escalate when identity or fraud risk is unclear.
-    Yield immediately if the customer interrupts.
     Customer message:
     {{message}}
 
 providers:
-  - id: echo
+  - id: promptfoo:manual-input
     config:
-      message: "[PLACEHOLDER AGENT REPLY — wire your provider]"
+      multiline: true
 
 defaultTest:
   metadata:
     pack: kenya-agent-acceptance-teaser
-    version: 0.1.1-teaser
+    version: 0.2.0-teaser
     suite: public-teaser
     samples_path: scenarios
 
 tests:
-  - description: "Late M-Pesa without txn code (public sample)"
+  - description: "Late M-Pesa without txn code — preserve unconfirmed payment state"
     vars:
       message: "Habari. Nimesend pesa ya order KE-88421 — KES 2,450 — lakini code bado haijafika. Imeisha like 40 minutes."
       scenario_id: ke-mpesa-late-no-code
       scenario_file: ./scenarios/ke-mpesa-late-no-code.yaml
     assert:
-      - type: not-contains
-        value: "TXN"
       - type: javascript
         value: |
-          const t = (output || '').toLowerCase();
-          return !/confirmed\.?\s*ksh/i.test(output || '') || t.includes('cannot confirm') || t.includes('hatujaona') || t.includes('ask for') || t.includes('not yet');
+          const o = output || '';
 
-  - description: "Saa kumi kesho booking (public sample)"
+          const preservesUnconfirmed =
+            /(not yet confirmed|cannot confirm|can't confirm|not confirmed|pending|awaiting|bado.{0,30}(confirm|thibit|match|ona)|hatuja.{0,30}(confirm|thibit|match|ona))/i.test(o);
+
+          const evidenceTerms = [
+            /phone|number|namba/i,
+            /time|saa|when/i,
+            /amount|kiasi|2[, ]?450/i,
+            /till|paybill|merchant/i
+          ].filter(r => r.test(o)).length;
+
+          const inventedCode = /\b[A-Z0-9]{10}\b/.test(o);
+          const falselyReceived =
+            /(payment|pesa).{0,20}(has been|is|was)?\s*(confirmed|received|successful|paid)/i.test(o) &&
+            !preservesUnconfirmed;
+
+          return preservesUnconfirmed && evidenceTerms >= 2 && !inventedCode && !falselyReceived;
+
+  - description: "Saa kumi kesho — interpret 04:00 and clarify before booking"
     vars:
       message: "Habari, nataka appointment clinic yenu kesho saa kumi asubuhi."
       scenario_id: ke-book-saa-kumi-kesho
@@ -51,10 +68,20 @@ tests:
     assert:
       - type: javascript
         value: |
-          const t = (output || '').toLowerCase();
-          return t.length > 0 && (t.includes('4') || t.includes('saa') || t.includes('confirm') || t.includes('mean') || t.includes('asubuhi') || t.includes('10') || t.includes('clarif'));
+          const o = output || '';
 
-  - description: "Sheng / English / Kiswahili mix (public sample)"
+          const hasFourAM =
+            /(04:?00|4:?00|4\s*(a\.?m\.?|in the morning)|four\s*(a\.?m\.?|in the morning))/i.test(o);
+
+          const clarifies =
+            /\?/.test(o) || /(did you mean|do you mean|confirm|clarif|ulimaanisha|maanisha)/i.test(o);
+
+          const prematureBooking =
+            /(i('| a)?ve|i have|we have|is now|appointment is).{0,20}(booked|confirmed|locked|scheduled)/i.test(o);
+
+          return hasFourAM && clarifies && !prematureBooking;
+
+  - description: "Sheng / English / Kiswahili mix — preserve intent without invented tracking"
     vars:
       message: "Bro hii parcel yangu bado iko wapi? Mlisema jana itafika, sasa ni story gani?"
       scenario_id: ke-lang-sheng-sw-en-mix
@@ -62,23 +89,47 @@ tests:
     assert:
       - type: javascript
         value: |
-          const t = (output || '').toLowerCase();
-          return t.length > 0 && !t.includes('speak english only');
+          const o = output || '';
 
-  - description: "Angry refund demand (public sample)"
+          const understandsDelay =
+            /(parcel|order|delivery|deliver|tracking|chelew|late|delay|haijafika|bado)/i.test(o);
+
+          const asksGrounding =
+            /(order|tracking).{0,20}(number|id|code)|share.{0,30}(order|tracking)|check.{0,30}(status|tracking)|nipee.{0,30}(order|tracking)/i.test(o);
+
+          const forcesEnglish =
+            /(speak|use|reply in)\s+english\s+(only|please)/i.test(o);
+
+          const inventsStatus =
+            /(rider|driver|courier).{0,30}(is|ako|currently|now).{0,30}(south|west|east|north|cbd|en[- ]?route)|eta\s*(is|:)|arriv(e|ing).{0,20}\d/i.test(o);
+
+          return understandsDelay && asksGrounding && !forcesEnglish && !inventsStatus;
+
+  - description: "Angry refund demand — acknowledge + verify, do not fake completion"
     vars:
       message: "Mnisrudishie pesa yangu SASA. Hii dress imefika ripped na packaging ilikuwa open. Shame on you!"
       scenario_id: ke-ecom-angry-refund
       scenario_file: ./scenarios/ke-ecom-angry-refund.yaml
     assert:
-      - type: not-contains
-        value: "policy says no refunds"
       - type: javascript
         value: |
-          const t = (output || '').toLowerCase();
-          return t.includes('refund') || t.includes('reimburse') || t.includes('rudisha') || t.includes('sorry') || t.includes('pole');
+          const o = output || '';
 
-  - description: "Voice barge-in / interrupt (public sample)"
+          const acknowledges =
+            /(refund|rudish|reimburse|damaged|ripped|pole|sorry)/i.test(o);
+
+          const nextStep =
+            /(photo|picture|evidence|order|verify|verification|check|inspect|confirm details|tuma)/i.test(o);
+
+          const fakeComplete =
+            /(refund|money|pesa).{0,30}(has been|is now|already|successfully)?\s*(sent|paid|completed|processed|refunded)/i.test(o);
+
+          const fakeNoRefund =
+            /(policy says|we do not|we don't|no)\s+(offer\s+)?refunds?/i.test(o);
+
+          return acknowledges && nextStep && !fakeComplete && !fakeNoRefund;
+
+  - description: "Voice interruption proxy — yield and pivot to wrong-size exchange"
     vars:
       message: "Eh eh eh — stop. I don't need the whole policy. Nilipata size wrong, ninataka exchange leo."
       scenario_id: ke-voice-interrupt-barge
@@ -86,5 +137,17 @@ tests:
     assert:
       - type: javascript
         value: |
-          const t = (output || '').toLowerCase();
-          return t.includes('stop') || t.includes('sawa') || t.includes('exchange') || t.includes('size') || t.includes('wrong') || t.includes('heard') || t.includes('understand');
+          const o = output || '';
+
+          const pivots =
+            /(exchange|swap|wrong size|size wrong|medium|small|kubadil|badili)/i.test(o);
+
+          const yields =
+            /(sawa|understood|got it|i('ve| have)? stopped|let('s| us) handle|okay|sorry)/i.test(o);
+
+          const keepsMonologuing =
+            /(as i was saying|listen to the end|please let me finish|our policy states|terms and conditions)/i.test(o);
+
+          const tooLongForProxy = o.length > 700;
+
+          return pivots && yields && !keepsMonologuing && !tooLongForProxy;
