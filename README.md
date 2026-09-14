@@ -38,6 +38,7 @@ The public Promptfoo config uses deterministic checks where practical. For produ
 - [`FAILURE_STORY.md`](FAILURE_STORY.md) — short demo script
 - [`SCENARIO_SCHEMA.md`](SCENARIO_SCHEMA.md) — acceptance-test contract
 - [`LICENSE`](LICENSE) — evaluation-only; commercial pack separate
+- **Spoken teaser demo** (~46s voice note covering *saa kumi*, M-Pesa without code, and this repo CTA) exists privately — ask via Discussion/Issue if you want to hear it. Audio is not mirrored here.
 
 ## What this is / is not
 
