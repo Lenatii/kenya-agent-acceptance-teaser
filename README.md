@@ -24,6 +24,8 @@ npx promptfoo@latest eval -c promptfooconfig.teaser.yaml -j 1 --no-progress-bar
 
 The teaser defaults to Promptfoo's **manual-input provider** so you can paste a real reply from any agent without configuring API keys. For automated regression, replace that provider with your own Promptfoo target (OpenAI/Anthropic/HTTP/custom provider/etc.).
 
+> **Proof-eval (private pack):** an Anthropic proxy harness for these 5 cases is pending / available in the commercial pack (`run-proxy-eval.sh`) — not required to try the manual-input teaser above.
+
 **Important:** the public voice interruption case is a transcript-level semantic proxy. It does not measure acoustic barge-in latency, VAD, duplex audio, packet loss, or TTS interruption timing; those require a voice-capable harness.
 
 ## What a credible pass means
